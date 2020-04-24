@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -88,5 +89,33 @@ class ProductServiceTest {
         Assertions.assertNotNull(returnedProduct, "The saved product should not be null");
         Assertions.assertEquals(1, returnedProduct.getVersion().intValue(),
                 "The version for a new product should be 1");
+    }
+
+    @Test
+    @DisplayName("Test update product")
+    void testUpdate() {
+        Product mockProduct = new Product(1, "Product Name", 10);
+        doReturn(mockProduct).when(repository).save(any());
+        doReturn(true).when(repository).update(any());
+
+        Product returnedProduct = service.save(mockProduct);
+        returnedProduct.setName("Product updated");
+        boolean isUpdated = service.update(returnedProduct);
+
+        Assertions.assertTrue(isUpdated, "The value should be true");
+        Assertions.assertEquals("Product updated", returnedProduct.getName(), "The name of the product should be updated");
+    }
+
+    @Test
+    @DisplayName("Test delete product")
+    void testDelete() {
+        Product mockProduct = new Product(1, "Product Name", 10);
+        doReturn(mockProduct).when(repository).save(any());
+        doReturn(true).when(repository).delete(any());
+
+        service.save(mockProduct);
+        boolean isDeleted = service.delete(1);
+
+        Assertions.assertTrue(isDeleted, "The value should be true");
     }
 }
